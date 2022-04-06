@@ -1,5 +1,17 @@
 .header {
   background-color: darkslategray;
   height: 5%;
+  width: 100%;
   color: white;
+}
+
+.body {
+  background-color: white;
+  color: darkgray;
+  height: 95%;
+  width: 100%;
+}
+
+.URLinput {
+  width: 75%;
 }

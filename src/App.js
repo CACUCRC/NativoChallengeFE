@@ -33,7 +33,7 @@ function App() {
   return (
     <div>
       <header className="header">
-        <Grid container direction="row" justifyContent="space-between" alignItems="center">
+        <Grid container direction="row" justifyContent="space-around" alignItems="center">
           <h2>URL Shortener</h2>
           <IconButton onClick={openMenu}>
             <AccountCircleIcon fontSize="large" />
@@ -57,7 +57,7 @@ function App() {
           </Menu>
         </Grid>
       </header>
-      <body>
+      <body className='body'>
         <Grid container direction="column" justifyContent="space-between" alignItems="center">
           <Grid container direction="column" justifyContent="space-around" alignItems="center">
             <h1>Insert your URL here</h1>
