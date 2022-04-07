@@ -1,4 +1,4 @@
-import logo from './logo.svg';
+import axios from 'axios'
 import './App.css';
 import { Grid, IconButton, TextField, Paper, Menu, MenuItem, Button, InputAdornment, Divider } from '@material-ui/core';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
@@ -11,7 +11,7 @@ function App() {
   const [code, setCode] = useState('')
   const [logged, setLogged] = useState(false)
   const [menu, setMenu] = useState(null)
-  const [Username, setUserName] = useState('')
+  const [username, setUserName] = useState('')
   const [password, setPassword] = useState('')
 
   const openMenu = (event) => {
@@ -23,11 +23,32 @@ function App() {
   }
 
   const handleLogIn = () => {
-    setLogged(true)
+    axios.post("http://localhost:3000/login", {userName : username, password : password}).then((res) => {
+      console.log(res.status)
+      setLogged(true)
+    })
   }
 
   const handleLogOut = () => {
     setLogged(false)
+  }
+
+  const handleChangeUsername = (event) => {
+    setUserName(event.target.value)
+  }
+
+  const handleChangePassword = (event) => {
+    setPassword(event.target.value)
+  }
+
+  const handleChangeUrl = (event) => {
+    setUrl(event.target.value)
+  }
+
+  const handleGenerate = () => {
+    axios.post("http://localhost:3000/generate", {urlSent : url}).then((res) => {
+      console.log(res.status)
+    })
   }
 
   return (
@@ -47,8 +68,8 @@ function App() {
               
             : 
               <Grid container direction="column" justifyContent="space-between" alignItems="center">
-                <TextField label="Username"/>
-                <TextField label="Password"/>
+                <TextField label="Username" onChange={handleChangeUsername}/>
+                <TextField label="Password" onChange={handleChangePassword}/>
                 <MenuItem onClick={handleLogIn}>
                   Log In
                 </MenuItem>
@@ -61,12 +82,16 @@ function App() {
         <Grid container direction="column" justifyContent="space-between" alignItems="center">
           <Grid container direction="column" justifyContent="space-around" alignItems="center">
             <h1>Insert your URL here</h1>
-            <TextField label="URL" variant="outlined" />
+            <TextField label="URL" variant="outlined" onChange={handleChangeUrl}/>
+            <Button variant="contained" onClick={handleGenerate}>
+              Generate code
+            </Button>
             <h2>Your code</h2>
             <TextField placeholder="Your code will show up here" variant="outlined" InputProps={{ endAdorment : ( <InputAdornment position="end"> <AssignmentIcon/> </InputAdornment> ), }} />
             <h1>Insert your code here</h1>
+            <TextField label="Code" variant="outlined" />
           </Grid>
-          <TextField label="Code" variant="outlined" />
+          
         </Grid>
       </body>
     </div>
