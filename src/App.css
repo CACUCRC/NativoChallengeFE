@@ -12,6 +12,45 @@
   width: 100%;
 }
 
+.buttonsLogin {
+  width: 95%;
+}
+
+.buttonsMain {
+  width: 12.5%;
+}
+
+.loginField {
+  width: 90%;
+}
+
+.mainField {
+  width: 75%;
+}
+
+.secondField {
+  width: 50%;
+}
+
+.code {
+  width: 35%;
+}
+
+.showCode {
+  text-align: center;
+  color: darkgray;
+  width: 90%;
+}
+
+.copyCode {
+  min-width: auto;
+  text-align: center;
+}
+
 .URLinput {
   width: 75%;
+}
+
+.loginMenu {
+  width: 100vw;
 }
