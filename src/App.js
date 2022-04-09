@@ -67,7 +67,6 @@ function App() {
     if (check) {
       setErrorUrl(false)
       axios.post("http://localhost:8000/generate", { urlSent: url }).then((res) => {
-        console.log(res.data)
         if (res.status === 200) {
           setCode(res.data.code.toString())
         }
@@ -89,7 +88,6 @@ function App() {
 
   const handleOpenDialog = () => {
     handleTop20()
-    console.log(top20)
     setPopup(true)
   }
 
@@ -139,16 +137,16 @@ function App() {
           <Menu anchorEl={menu} keepMounted open={Boolean(menu)} onClose={closeMenu}>
             {logged ?
               <Grid container direction="column" justifyContent="space-between" alignItems="center" className='loginMenu'>
-                <Button variant="contained" className='buttonsLogin' onClick={handleOpenDialog}>See top 20</Button>
+                <Button data-testid="top20Button" variant="contained" className='buttonsLogin' onClick={handleOpenDialog}>See top 20</Button>
                 <p></p>
-                <Button variant="contained" className='buttonsLogin' onClick={handleLogOut}>Log Out</Button>
+                <Button data-testid="logoutButton" variant="contained" className='buttonsLogin' onClick={handleLogOut}>Log Out</Button>
               </Grid>
               :
               <Grid container direction="column" justifyContent="space-between" alignItems="center" className='loginMenu'>
-                <TextField className='loginField' label="Username" onChange={handleChangeUsername} error={errorLogin} />
-                <TextField className='loginField' label="Password" onChange={handleChangePassword} error={errorLogin} />
+                <TextField inputProps={{ "data-testid": "usernameField" }} className='loginField' label="Username" onChange={handleChangeUsername} error={errorLogin} />
+                <TextField inputProps={{ "data-testid": "passwordField" }} className='loginField' label="Password" onChange={handleChangePassword} error={errorLogin} />
                 <p></p>
-                <Button variant="contained" className='buttonsLogin' onClick={handleLogIn}>
+                <Button data-testid="loginButton" variant="contained" className='buttonsLogin' onClick={handleLogIn}>
                   Log In
                 </Button>
               </Grid>
@@ -186,15 +184,15 @@ function App() {
             }
           </Dialog>
           <h1>Insert your URL here</h1>
-          <TextField label="URL" variant="outlined" className='mainField' onChange={handleChangeUrl} error={errorUrl} helperText={errorUrl ? "The URL introduced is invalid" : ""} />
+          <TextField inputProps={{ "data-testid": "urlField" }} label="URL" variant="outlined" className='mainField' onChange={handleChangeUrl} error={errorUrl} helperText={errorUrl ? "The URL introduced is invalid" : ""} />
           <p></p>
-          <Button variant="contained" className='buttonsMain' onClick={handleGenerate}>
+          <Button data-testid="generateButton" variant="contained" className='buttonsMain' onClick={handleGenerate}>
             Generate code
           </Button>
           <p></p>
           <Paper variant="outlined" elevation={0} className='code'>
             <Grid container direction="row" justifyContent="space-between" alignItems="center">
-              <h3 className='showCode'>{code}</h3>
+              <h3  className='showCode'>{code}</h3>
               <Paper elevation={0} className='codeCopy'>
                 <Tooltip title="Copy to clipboard">
                   <IconButton onClick={() => {
@@ -211,9 +209,9 @@ function App() {
             </Grid>
           </Paper>
           <h1>Insert your code here</h1>
-          <TextField className='code' label="Code" variant="outlined" onChange={handleChangeGoto} error={errorCode} helperText={errorCode ? "The code does not match any registered URL" : ""}/>
+          <TextField inputProps={{ "data-testid": "codeField" }} className='code' label="Code" variant="outlined" onChange={handleChangeGoto} error={errorCode} helperText={errorCode ? "The code does not match any registered URL" : ""}/>
           <p></p>
-          <Button variant="contained" className='buttonsMain' onClick={handleRedirect}>Go to page</Button>
+          <Button data-testid="redirectButton" variant="contained" className='buttonsMain' onClick={handleRedirect}>Go to page</Button>
           <p></p>
           <label>Or introduce your code in the navbar as "localhost:3000/[your_code]"</label>
         </Grid>
