@@ -28,11 +28,12 @@ test('generates apropiate code for "http://www.youtube.com" (2149)', () => {
 
 test('introducing 2149 should redirect to "http://www.yotube.com"', () => {
   render(<App/>)
+  window.open = jest.fn()
   const codeField = screen.getByTestId('codeField')
   fireEvent.change(codeField, {target: {value: "2149"}})
   const redButton = screen.getByTestId('redirectButton')
   fireEvent.click(redButton)
-
+  expect(window.open).toBeCalledWith("http://www.youtube.com")
 })
 
 test('login with correct credentials', () => {
