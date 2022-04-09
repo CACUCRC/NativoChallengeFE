@@ -1,6 +1,6 @@
 import axios from 'axios'
 import './App.css';
-import { Grid, IconButton, TextField, Paper, Menu, MenuItem, Button, InputAdornment, Divider, Tooltip } from '@material-ui/core';
+import { Grid, IconButton, TextField, Paper, Menu, Button, Tooltip, Dialog, DialogTitle, DialogContent, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@material-ui/core';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import { useEffect, useState } from 'react';
@@ -16,6 +16,9 @@ function App() {
   const [errorLogin, setErrorLogin] = useState(false)
   const [errorUrl, setErrorUrl] = useState(false)
   const [errorCode, setErrorCode] = useState(false)
+  const [top20, setTop20] = useState([])
+  const [popup, setPopup] = useState(false)
+  const [goto, setGoto] = useState('')
 
   const openMenu = (event) => {
     setMenu(event.currentTarget);
@@ -54,6 +57,10 @@ function App() {
     setUrl(event.target.value)
   }
 
+  const handleChangeGoto = (event) => {
+    setGoto(event.target.value)
+  }
+
   const handleGenerate = () => {
     const regEx = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/
     const check = regEx.exec(url)
@@ -71,9 +78,53 @@ function App() {
 
   }
 
+  const handleTop20 = () => {
+    axios.get("http://localhost:8000/top20").then((res) => {
+      if (res.status === 200) {
+        const results = res.data.results
+        setTop20(results)
+      }
+    })
+  }
+
+  const handleOpenDialog = () => {
+    handleTop20()
+    console.log(top20)
+    setPopup(true)
+  }
+
+  const handleCloseDialog = () => {
+    setPopup(false)
+  }
+
+  const handleRedirect = () => {
+    axios.post("http://localhost:8000/goto", { code: goto }).then((res) => {
+      if (res.status === 200) {
+        setErrorCode(false)
+        const url = res.data.url
+        window.open(url)
+      }else{
+        setErrorCode(true)
+      }
+    })
+  }
+
+  const handleRedirectBar = (gotoBar) => {
+    axios.post("http://localhost:8000/goto", { code: gotoBar }).then((res) => {
+      if (res.status === 200) {
+        const url = res.data.url
+        window.open(url)
+      }
+    })
+  }
+
   useEffect(() => {
     setCode('Your code will show up here')
   }, [])
+
+  useEffect(() => {
+    handleRedirectBar(window.location.pathname.substring(1))
+  }, [window.location])
 
   return (
     <div>
@@ -88,7 +139,7 @@ function App() {
           <Menu anchorEl={menu} keepMounted open={Boolean(menu)} onClose={closeMenu}>
             {logged ?
               <Grid container direction="column" justifyContent="space-between" alignItems="center" className='loginMenu'>
-                <Button variant="contained" className='buttonsLogin' >See top 20</Button>
+                <Button variant="contained" className='buttonsLogin' onClick={handleOpenDialog}>See top 20</Button>
                 <p></p>
                 <Button variant="contained" className='buttonsLogin' onClick={handleLogOut}>Log Out</Button>
               </Grid>
@@ -107,6 +158,33 @@ function App() {
       </header>
       <body className='body'>
         <Grid container direction="column" justifyContent="space-between" alignItems="center">
+          <Dialog onClose={handleCloseDialog} open={popup}>
+            <DialogTitle>Top 20 most visited URLs</DialogTitle>
+            {top20.length === 0 ? <DialogContent>No entries to show</DialogContent> :
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>URL</TableCell>
+                      <TableCell>Visits</TableCell>
+                      <TableCell>Requests</TableCell>
+                      <TableCell>Code</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {top20.map((row) => (
+                      <TableRow>
+                        <TableCell>{row.url}</TableCell>
+                        <TableCell>{row.visits}</TableCell>
+                        <TableCell>{row.requests}</TableCell>
+                        <TableCell>{row.code}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            }
+          </Dialog>
           <h1>Insert your URL here</h1>
           <TextField label="URL" variant="outlined" className='mainField' onChange={handleChangeUrl} error={errorUrl} helperText={errorUrl ? "The URL introduced is invalid" : ""} />
           <p></p>
@@ -133,9 +211,11 @@ function App() {
             </Grid>
           </Paper>
           <h1>Insert your code here</h1>
-          <TextField className='code' label="Code" variant="outlined" />
+          <TextField className='code' label="Code" variant="outlined" onChange={handleChangeGoto} error={errorCode} helperText={errorCode ? "The code does not match any registered URL" : ""}/>
           <p></p>
-          <Button variant="contained" className='buttonsMain' >Go to page</Button>
+          <Button variant="contained" className='buttonsMain' onClick={handleRedirect}>Go to page</Button>
+          <p></p>
+          <label>Or introduce your code in the navbar as "localhost:3000/[your_code]"</label>
         </Grid>
       </body>
     </div>
